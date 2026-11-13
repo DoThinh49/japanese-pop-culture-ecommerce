@@ -1,7 +1,7 @@
 {
-  "name": "nihonex-server",
+  "name": "japanese-pop-culture-ecommerce-server",
   "version": "1.0.0",
-  "description": "Backend API for Japanese Pop Culture E-Commerce (NihoNex)",
+  "description": "Backend API for Japanese Pop Culture E-Commerce Platform",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -12,7 +12,7 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts"
   },
-  "keywords": ["express", "typescript", "prisma", "ecommerce", "anime"],
+  "keywords": ["express", "typescript", "prisma", "ecommerce", "anime", "japanese-pop-culture"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -42,4 +42,3 @@
     "seed": "tsx prisma/seed.ts"
   }
 }
-

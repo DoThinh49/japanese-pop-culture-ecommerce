@@ -1,4 +1,4 @@
-# NihoNex - Japanese Pop Culture E-Commerce Platform
+# Japanese Pop Culture E-Commerce Platform (`japanese-pop-culture-ecommerce`)
 
 Đề tài Khóa luận tốt nghiệp: **Thiết kế và xây dựng website kinh doanh sản phẩm văn hóa đại chúng Nhật Bản**
 
@@ -6,7 +6,7 @@
 
 - **Frontend:** Next.js 14+ (App Router), React, TypeScript, CSS Modules, Axios, Zustand, Recharts
 - **Backend:** Node.js, Express.js, TypeScript, RESTful API, JWT, bcryptjs, Prisma ORM
-- **Database:** PostgreSQL trên **Supabase Cloud** (Cơ sở dữ liệu bên ngoài)
+- **Database:** PostgreSQL trên **Supabase Cloud** (Cơ sở dữ liệu đám mây bên ngoài)
 - **File Storage:** Supabase Storage (Lưu trữ ảnh trên đám mây)
 - **Tích hợp:** VNPay Sandbox (Thanh toán trực tuyến), Google OAuth 2.0
 - **Triển khai:** Render (Frontend + Backend), Supabase Cloud
@@ -16,7 +16,7 @@
 ## 📁 Cấu trúc thư mục
 
 ```text
-KhoaLuanTotNghiep/
+japanese-pop-culture-ecommerce/
 ├── client/                     # Ứng dụng Frontend (Next.js 14)
 ├── server/                     # API Backend (Express.js + TypeScript)
 │   ├── prisma/
@@ -36,4 +36,3 @@ KhoaLuanTotNghiep/
 │   └── tsconfig.json
 └── README.md
 ```
-

@@ -5,17 +5,21 @@ import Link from 'next/link';
 import { ShoppingCart, Heart, Search, LogOut, ShieldCheck, User as UserIcon, Package, ChevronDown } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
+import { useWishlistStore } from '@/stores/wishlistStore';
 
 export default function Header() {
   const { user, logout, checkAuth } = useAuthStore();
   const totalCartItems = useCartStore((state) => state.getTotalItems());
+  const wishlistCount = useWishlistStore((state) => state.ids.length);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
   const [mounted, setMounted] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     checkAuth();
-  }, [checkAuth]);
+    fetchWishlist();
+  }, [checkAuth, fetchWishlist]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -60,9 +64,14 @@ export default function Header() {
             <Link
               href="/wishlist"
               className="p-2 text-gray-600 hover:text-red-600 rounded-full hover:bg-gray-50 transition-colors relative"
-              title="Yêu thích"
+              title="Danh sách yêu thích"
             >
               <Heart className="w-5 h-5" />
+              {mounted && wishlistCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-in zoom-in-50 duration-150">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}

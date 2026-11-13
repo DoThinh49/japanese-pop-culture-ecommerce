@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { CreditCard, Truck, AlertCircle, Lock, ShieldCheck, QrCode } from 'lucide-react';
+import { CreditCard, Truck, AlertCircle, Lock, ShieldCheck, QrCode, Sparkles } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import api from '@/lib/api';
@@ -17,6 +17,7 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [usePoints, setUsePoints] = useState(false);
 
   // Shipping Form State
   const [formData, setFormData] = useState({
@@ -83,7 +84,15 @@ export default function CheckoutPage() {
   const subtotal = getTotalPrice();
   const shippingFee = subtotal >= 1000000 ? 0 : 35000;
   const discountAmount = appliedVoucher ? appliedVoucher.discount : 0;
-  const totalAmount = Math.max(0, subtotal + shippingFee - discountAmount);
+
+  const userPoints = user?.otakuPoints || 0;
+  const maxPointsApplicable = Math.floor(
+    Math.max(0, subtotal + shippingFee - discountAmount) / 1000
+  );
+  const pointsToRedeem = usePoints ? Math.min(userPoints, maxPointsApplicable) : 0;
+  const pointsDiscount = pointsToRedeem * 1000;
+
+  const totalAmount = Math.max(0, subtotal + shippingFee - discountAmount - pointsDiscount);
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +116,8 @@ export default function CheckoutPage() {
         note: formData.note,
         paymentMethod,
         voucherCode: appliedVoucher?.code,
+        usePoints,
+        pointsToUse: pointsToRedeem,
         items: items.map((i) => ({
           productId: i.id,
           quantity: i.quantity,
@@ -397,6 +408,38 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Otaku Points Box */}
+            {user && userPoints > 0 && (
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <span className="text-xs font-bold text-gray-800">
+                      Điểm tích lũy Otaku
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-amber-600">
+                    ⭐ {userPoints} điểm
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <label
+                    htmlFor="usePointsCheckbox"
+                    className="text-[11px] text-gray-600 cursor-pointer"
+                  >
+                    Dùng {Math.min(userPoints, maxPointsApplicable)} điểm để giảm giá
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="usePointsCheckbox"
+                    checked={usePoints}
+                    onChange={(e) => setUsePoints(e.target.checked)}
+                    className="w-4 h-4 rounded text-red-600 focus:ring-red-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Cost breakdown */}
             <div className="space-y-2 text-xs text-gray-600 pt-3 border-t border-gray-100">
               <div className="flex justify-between">
@@ -411,6 +454,15 @@ export default function CheckoutPage() {
                   <span>Voucher ({appliedVoucher.code})</span>
                   <span className="font-semibold">
                     -{discountAmount.toLocaleString('vi-VN')} đ
+                  </span>
+                </div>
+              )}
+
+              {pointsDiscount > 0 && (
+                <div className="flex justify-between text-amber-600 font-medium">
+                  <span>Điểm Otaku ({pointsToRedeem} điểm)</span>
+                  <span className="font-semibold">
+                    -{pointsDiscount.toLocaleString('vi-VN')} đ
                   </span>
                 </div>
               )}

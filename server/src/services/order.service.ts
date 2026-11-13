@@ -19,6 +19,8 @@ export interface CreateOrderInput {
   paymentMethod: PaymentMethod;
   items: CreateOrderItemInput[];
   voucherCode?: string;
+  usePoints?: boolean;
+  pointsToUse?: number;
   note?: string;
   clientIp?: string;
 }
@@ -93,14 +95,35 @@ export class OrderService {
       }
     }
 
-    const totalAmount = Math.max(0, subtotal + shippingFee - discountAmount);
+    // 5. Otaku Points calculation (1 point = 1,000 VND discount)
+    let pointsUsed = 0;
+    let pointsDiscount = 0;
+    if (input.usePoints || (input.pointsToUse && input.pointsToUse > 0)) {
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+        select: { otakuPoints: true },
+      });
+      if (user && user.otakuPoints > 0) {
+        const maxPointsAvailable = user.otakuPoints;
+        const requestedPoints = input.pointsToUse
+          ? Math.min(input.pointsToUse, maxPointsAvailable)
+          : maxPointsAvailable;
+        const maxApplicablePoints = Math.floor(
+          Math.max(0, subtotal + shippingFee - discountAmount) / 1000
+        );
+        pointsUsed = Math.max(0, Math.min(requestedPoints, maxApplicablePoints));
+        pointsDiscount = pointsUsed * 1000;
+      }
+    }
 
-    // 5. Generate unique Order Code: AKB-YYYYMMDD-XXXX
+    const totalAmount = Math.max(0, subtotal + shippingFee - discountAmount - pointsDiscount);
+
+    // 6. Generate unique Order Code: AKB-YYYYMMDD-XXXX
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const orderCode = `AKB-${dateStr}-${randomSuffix}`;
 
-    // 6. Find or create delivery Address
+    // 7. Find or create delivery Address
     let address = await prisma.address.findFirst({
       where: {
         userId: input.userId,
@@ -127,7 +150,7 @@ export class OrderService {
       });
     }
 
-    // 7. Create Order in Database
+    // 8. Create Order in Database
     const order = await prisma.order.create({
       data: {
         orderCode,
@@ -138,6 +161,8 @@ export class OrderService {
         shippingFee,
         discountAmount,
         totalAmount,
+        pointsUsed,
+        pointsDiscount,
         paymentMethod: input.paymentMethod,
         paymentStatus: PaymentStatus.PENDING,
         orderStatus: OrderStatus.PENDING,
@@ -165,6 +190,23 @@ export class OrderService {
         address: true,
       },
     });
+
+    // Deduct user's points if used
+    if (pointsUsed > 0) {
+      await prisma.user.update({
+        where: { id: input.userId },
+        data: { otakuPoints: { decrement: pointsUsed } },
+      });
+      await prisma.pointTransaction.create({
+        data: {
+          userId: input.userId,
+          orderId: order.id,
+          type: "SPEND",
+          points: pointsUsed,
+          description: `Sử dụng ${pointsUsed} điểm Otaku cho đơn hàng ${order.orderCode}`,
+        },
+      });
+    }
 
     // 8. If VNPay payment method, generate VNPay URL
     let paymentUrl: string | null = null;

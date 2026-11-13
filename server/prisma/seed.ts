@@ -402,6 +402,134 @@ async function main() {
     },
   });
 
+  // Product 5: Manga One Piece Tập 100 Bản Đặc Biệt
+  const prodMangaOP = await prisma.product.create({
+    data: {
+      name: "Manga One Piece - Tập 100 (Bản Giới Hạn Kèm Bìa Áo Metalize & Bưu Thiếp)",
+      slug: "manga-one-piece-tap-100-ban-dac-biet",
+      sku: "MAN-OP-VOL100-LTD",
+      description: "Tập kỷ niệm cột mốc 100 tập của kiệt tác One Piece từ tác giả Eiichiro Oda. Ấn bản đặc biệt đi kèm bìa áo kim loại óng ánh và bộ bưu thiếp độc quyền dành riêng cho nhà sưu tập.",
+      price: 95000,
+      originalPrice: 110000,
+      stockQuantity: 50,
+      condition: ProductCondition.NEW_SEALED,
+      scale: "Bản in giấy cao cấp",
+      material: "Giấy xốp nhập khẩu Nhật",
+      status: ProductStatus.IN_STOCK,
+      isFeatured: true,
+      categoryId: catManga.id,
+      seriesId: seriesOP.id,
+      characterId: charLuffy.id,
+      avgRating: 5.0,
+      reviewCount: 22,
+    },
+  });
+
+  await prisma.productImage.create({
+    data: {
+      productId: prodMangaOP.id,
+      imageUrl: "https://images.unsplash.com/photo-1618365908648-e71bd5716cba?w=800",
+      isPrimary: true,
+      sortOrder: 1,
+    },
+  });
+
+  // Product 6: Standee Acrylic Gojo Satoru
+  const prodStandee = await prisma.product.create({
+    data: {
+      name: "Standee Acrylic Gojo Satoru Vô Hạn Không Gian Lấp Lánh - MAPPA Official",
+      slug: "standee-acrylic-gojo-satoru-vo-han-khong-gian",
+      sku: "ACC-JJK-STANDEE-01",
+      description: "Standee mica Acrylic chính hãng MAPPA Studios Nhật Bản với hiệu ứng tráng gương kim tuyến bắt sáng siêu nét, đế lồng khớp 2 tầng chắc chắn.",
+      price: 185000,
+      originalPrice: 220000,
+      stockQuantity: 35,
+      condition: ProductCondition.NEW_SEALED,
+      scale: "Cao 16cm",
+      material: "Acrylic mica trong suốt cao cấp",
+      status: ProductStatus.IN_STOCK,
+      isFeatured: true,
+      categoryId: catMerch.id,
+      seriesId: seriesJJK.id,
+      characterId: charGojo.id,
+      avgRating: 4.9,
+      reviewCount: 9,
+    },
+  });
+
+  await prisma.productImage.create({
+    data: {
+      productId: prodStandee.id,
+      imageUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?w=800",
+      isPrimary: true,
+      sortOrder: 1,
+    },
+  });
+
+  // Product 7: Áo Hoodie Jujutsu Kaisen Gojo Eyes (Thời trang)
+  const prodHoodie = await prisma.product.create({
+    data: {
+      name: "Áo Hoodie Nỉ Bông Anime Jujutsu Kaisen - Gojo Satoru Eyes Oversize",
+      slug: "ao-hoodie-anime-jujutsu-kaisen-gojo-eyes-oversize",
+      sku: "APP-JJK-HOODIE-GOJO",
+      description: "Áo hoodie chất liệu nỉ cotton 100% định lượng 380gsm dày dặn, hình in thêu mắt Gojo Satoru Lục Nhãn phát sáng ánh xanh dạ quang chuẩn phong cách Streetwear Tokyo Akihabara.",
+      price: 490000,
+      originalPrice: 550000,
+      stockQuantity: 28,
+      condition: ProductCondition.NEW_SEALED,
+      scale: "Freesize Oversize (Dưới 85kg)",
+      material: "Cotton nỉ bông 380gsm cao cấp",
+      status: ProductStatus.IN_STOCK,
+      isFeatured: true,
+      categoryId: catApparel.id,
+      seriesId: seriesJJK.id,
+      characterId: charGojo.id,
+      avgRating: 4.9,
+      reviewCount: 18,
+    },
+  });
+
+  await prisma.productImage.create({
+    data: {
+      productId: prodHoodie.id,
+      imageUrl: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800",
+      isPrimary: true,
+      sortOrder: 1,
+    },
+  });
+
+  // Product 8: Áo Thun One Piece Gear 5 Nika Graphic Tee (Thời trang)
+  const prodTee = await prisma.product.create({
+    data: {
+      name: "Áo Thun Unisex One Piece Gear 5 Thần Mặt Trời Nika - Akiba Exclusive",
+      slug: "ao-thun-one-piece-gear-5-than-mat-troi-nika",
+      sku: "APP-OP-TEE-NIKA-01",
+      description: "Áo thun phong cách Harajuku form rộng trẻ trung, chất vải 100% cotton 2 chiều 250gsm co giãn thoải mái, công nghệ in kéo lụa thủ công Nhật Bản không bong tróc.",
+      price: 290000,
+      originalPrice: 350000,
+      stockQuantity: 45,
+      condition: ProductCondition.NEW_SEALED,
+      scale: "Size M / L / XL",
+      material: "100% Cotton 250gsm",
+      status: ProductStatus.IN_STOCK,
+      isFeatured: true,
+      categoryId: catApparel.id,
+      seriesId: seriesOP.id,
+      characterId: charLuffy.id,
+      avgRating: 5.0,
+      reviewCount: 14,
+    },
+  });
+
+  await prisma.productImage.create({
+    data: {
+      productId: prodTee.id,
+      imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800",
+      isPrimary: true,
+      sortOrder: 1,
+    },
+  });
+
   // 8. Seed Vouchers
   await prisma.voucher.createMany({
     data: [

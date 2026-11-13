@@ -15,10 +15,12 @@ import {
   Check,
   ChevronRight,
   Clock,
+  Heart,
 } from 'lucide-react';
 import api from '@/lib/api';
 import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useWishlistStore } from '@/stores/wishlistStore';
 
 interface ReviewItem {
   id: number;
@@ -70,6 +72,8 @@ export default function ProductDetailPage() {
 
   const addItem = useCartStore((state) => state.addItem);
   const { user } = useAuthStore();
+  const toggleWishlist = useWishlistStore((state) => state.toggleWishlist);
+  const isWishlisted = useWishlistStore((state) => (product ? state.isWishlisted(product.id) : false));
 
   // Review Form States
   const [reviewRating, setReviewRating] = useState<number>(5);
@@ -385,10 +389,22 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => product && toggleWishlist(product)}
+                className={`p-3 rounded-xl border flex items-center justify-center transition-all ${
+                  isWishlisted
+                    ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-xs'
+                    : 'bg-white border-gray-200 text-gray-400 hover:text-rose-500 hover:border-rose-200'
+                }`}
+                title={isWishlisted ? 'Đã yêu thích (Bấm để bỏ)' : 'Thêm vào yêu thích'}
+              >
+                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
+              </button>
+
               <button
                 onClick={handleAddToCart}
-                className="py-3 px-4 bg-white border-2 border-red-600 text-red-600 hover:bg-red-50 text-xs font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-white border-2 border-red-600 text-red-600 hover:bg-red-50 text-xs font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
               >
                 <ShoppingCart className="w-4 h-4" />
                 <span>Thêm vào giỏ</span>
@@ -396,7 +412,7 @@ export default function ProductDetailPage() {
 
               <button
                 onClick={handleBuyNow}
-                className="py-3 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-2"
               >
                 <Zap className="w-4 h-4" />
                 <span>{isPreorder ? 'Đặt trước ngay' : 'Mua ngay'}</span>

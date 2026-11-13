@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ShoppingCart, Heart, Search, LogOut, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
 
 export default function Header() {
   const { user, logout, checkAuth } = useAuthStore();
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function Header() {
             >
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center">
-                0
+                {mounted ? totalCartItems : 0}
               </span>
             </Link>
 

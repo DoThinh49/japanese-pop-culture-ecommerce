@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import productService from "../services/product.service.js";
 import { sendSuccess, sendError } from "../utils/response.js";
+import { AuthRequest } from "../middlewares/auth.middleware.js";
 
 export class ProductController {
   async getProducts(req: Request, res: Response) {
@@ -28,6 +29,17 @@ export class ProductController {
       return sendSuccess(res, product);
     } catch (error: any) {
       return sendError(res, error.message || "Không tìm thấy sản phẩm", 404);
+    }
+  }
+
+  async addReview(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.userId;
+      const { slug } = req.params;
+      const review = await productService.addReview(userId, slug, req.body);
+      return sendSuccess(res, review, "Gửi đánh giá thành công", 201);
+    } catch (error: any) {
+      return sendError(res, error.message || "Không thể gửi đánh giá", 400);
     }
   }
 }

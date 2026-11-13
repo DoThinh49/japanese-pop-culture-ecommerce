@@ -19,12 +19,15 @@ interface AuthState {
   register: (data: { email: string; password: string; fullName: string; phone?: string }) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
   isLoading: true,
+
+  setUser: (user: User) => set({ user }),
 
   login: async (email, password) => {
     const res = await api.post('/auth/login', { email, password });

@@ -32,5 +32,11 @@ router.put(
   authController.changePassword
 );
 
+// Address management
+router.post("/addresses", authenticate, authController.addAddress);
+router.put("/addresses/:id", authenticate, authController.updateAddress);
+router.delete("/addresses/:id", authenticate, authController.deleteAddress);
+router.patch("/addresses/:id/default", authenticate, authController.setDefaultAddress);
+
 export default router;
 

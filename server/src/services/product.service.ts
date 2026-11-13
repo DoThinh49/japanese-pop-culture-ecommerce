@@ -146,6 +146,67 @@ export class ProductService {
 
     return product;
   }
+
+  async addReview(
+    userId: number,
+    productSlug: string,
+    data: {
+      rating: number;
+      comment?: string;
+      orderId?: number;
+      imageUrls?: string[];
+    }
+  ) {
+    const product = await prisma.product.findUnique({
+      where: { slug: productSlug },
+      select: { id: true },
+    });
+
+    if (!product) {
+      throw new Error("Không tìm thấy sản phẩm");
+    }
+
+    const rating = Math.max(1, Math.min(5, Math.round(Number(data.rating) || 5)));
+
+    const review = await prisma.review.create({
+      data: {
+        userId,
+        productId: product.id,
+        orderId: data.orderId || null,
+        rating,
+        comment: data.comment?.trim() || null,
+        isApproved: true,
+        images: data.imageUrls && data.imageUrls.length > 0
+          ? {
+              create: data.imageUrls.map((url) => ({ imageUrl: url })),
+            }
+          : undefined,
+      },
+      include: {
+        user: {
+          select: { id: true, fullName: true, avatarUrl: true },
+        },
+        images: true,
+      },
+    });
+
+    // Recalculate average rating and review count
+    const stats = await prisma.review.aggregate({
+      where: { productId: product.id, isApproved: true },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: {
+        avgRating: stats._avg.rating || 0,
+        reviewCount: stats._count.rating || 0,
+      },
+    });
+
+    return review;
+  }
 }
 
 export const productService = new ProductService();

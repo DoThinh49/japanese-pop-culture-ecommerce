@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, Heart, Search, LogOut, ShieldCheck } from 'lucide-react';
+import { ShoppingCart, Heart, Search, LogOut, ShieldCheck, User as UserIcon, Package, ChevronDown } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 
@@ -10,6 +10,7 @@ export default function Header() {
   const { user, logout, checkAuth } = useAuthStore();
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const [mounted, setMounted] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -78,31 +79,81 @@ export default function Header() {
 
             {/* User Account */}
             {mounted && user ? (
-              <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
-                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-semibold text-gray-800 leading-tight">
-                    {user.fullName}
-                  </p>
-                  <p className="text-[10px] text-red-600 font-medium">
-                    {user.role === 'ADMIN' ? 'Quản trị viên' : `${user.otakuPoints} Điểm`}
-                  </p>
-                </div>
-                {user.role === 'ADMIN' && (
-                  <Link
-                    href="/admin"
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                    title="Trang quản trị"
-                  >
-                    <ShieldCheck className="w-5 h-5" />
-                  </Link>
-                )}
+              <div className="relative pl-2 border-l border-gray-200">
                 <button
-                  onClick={() => logout()}
-                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                  title="Đăng xuất"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs uppercase border border-red-200">
+                    {user.fullName ? user.fullName[0] : 'U'}
+                  </div>
+                  <div className="text-left hidden sm:block">
+                    <p className="text-xs font-semibold text-gray-800 leading-tight">
+                      {user.fullName}
+                    </p>
+                    <p className="text-[10px] text-red-600 font-medium">
+                      {user.role === 'ADMIN' ? '👑 Quản trị viên' : `⭐ ${user.otakuPoints} Điểm`}
+                    </p>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
                 </button>
+
+                {userMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-xs font-bold text-gray-900 truncate">{user.fullName}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+                      </div>
+
+                      {user.role === 'ADMIN' && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          Trang quản trị (Admin)
+                        </Link>
+                      )}
+
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <UserIcon className="w-4 h-4 text-gray-400" />
+                        Tài khoản của tôi
+                      </Link>
+
+                      <Link
+                        href="/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <Package className="w-4 h-4 text-gray-400" />
+                        Đơn mua của tôi
+                      </Link>
+
+                      <div className="border-t border-gray-100 my-1"></div>
+
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                      >
+                        <LogOut className="w-4 h-4 text-red-500" />
+                        Đăng xuất
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-2 pl-2">

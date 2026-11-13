@@ -94,6 +94,49 @@ export class AuthController {
       return sendError(res, error.message || "Đổi mật khẩu thất bại", 400);
     }
   }
+
+  async addAddress(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.userId;
+      const address = await authService.addAddress(userId, req.body);
+      return sendSuccess(res, address, "Thêm địa chỉ thành công", 201);
+    } catch (error: any) {
+      return sendError(res, error.message || "Thêm địa chỉ thất bại", 400);
+    }
+  }
+
+  async updateAddress(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.userId;
+      const addressId = Number(req.params.id);
+      const address = await authService.updateAddress(userId, addressId, req.body);
+      return sendSuccess(res, address, "Cập nhật địa chỉ thành công");
+    } catch (error: any) {
+      return sendError(res, error.message || "Cập nhật địa chỉ thất bại", 400);
+    }
+  }
+
+  async deleteAddress(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.userId;
+      const addressId = Number(req.params.id);
+      const result = await authService.deleteAddress(userId, addressId);
+      return sendSuccess(res, null, result.message);
+    } catch (error: any) {
+      return sendError(res, error.message || "Xóa địa chỉ thất bại", 400);
+    }
+  }
+
+  async setDefaultAddress(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.userId;
+      const addressId = Number(req.params.id);
+      const address = await authService.setDefaultAddress(userId, addressId);
+      return sendSuccess(res, address, "Đã đặt làm địa chỉ mặc định");
+    } catch (error: any) {
+      return sendError(res, error.message || "Đặt địa chỉ mặc định thất bại", 400);
+    }
+  }
 }
 
 export const authController = new AuthController();

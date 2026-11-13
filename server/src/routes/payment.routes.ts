@@ -6,3 +6,4 @@ const router = Router();
 router.get("/vnpay/return", paymentController.handleVNPayReturn);
 
 export default router;
+

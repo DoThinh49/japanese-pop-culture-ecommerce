@@ -204,6 +204,112 @@ export class AuthService {
 
     return { message: "Đổi mật khẩu thành công" };
   }
+
+  async addAddress(
+    userId: number,
+    data: {
+      recipientName: string;
+      phone: string;
+      province: string;
+      district: string;
+      ward: string;
+      streetAddress: string;
+      isDefault?: boolean;
+    }
+  ) {
+    if (data.isDefault) {
+      await prisma.address.updateMany({
+        where: { userId },
+        data: { isDefault: false },
+      });
+    }
+
+    const count = await prisma.address.count({ where: { userId } });
+    const isFirst = count === 0;
+
+    return prisma.address.create({
+      data: {
+        userId,
+        recipientName: data.recipientName,
+        phone: data.phone,
+        province: data.province,
+        district: data.district,
+        ward: data.ward,
+        streetAddress: data.streetAddress,
+        isDefault: data.isDefault ?? isFirst,
+      },
+    });
+  }
+
+  async updateAddress(
+    userId: number,
+    addressId: number,
+    data: {
+      recipientName?: string;
+      phone?: string;
+      province?: string;
+      district?: string;
+      ward?: string;
+      streetAddress?: string;
+      isDefault?: boolean;
+    }
+  ) {
+    const address = await prisma.address.findFirst({
+      where: { id: addressId, userId },
+    });
+
+    if (!address) {
+      throw new Error("Không tìm thấy địa chỉ");
+    }
+
+    if (data.isDefault) {
+      await prisma.address.updateMany({
+        where: { userId },
+        data: { isDefault: false },
+      });
+    }
+
+    return prisma.address.update({
+      where: { id: addressId },
+      data,
+    });
+  }
+
+  async deleteAddress(userId: number, addressId: number) {
+    const address = await prisma.address.findFirst({
+      where: { id: addressId, userId },
+    });
+
+    if (!address) {
+      throw new Error("Không tìm thấy địa chỉ");
+    }
+
+    await prisma.address.delete({
+      where: { id: addressId },
+    });
+
+    return { message: "Xóa địa chỉ thành công" };
+  }
+
+  async setDefaultAddress(userId: number, addressId: number) {
+    const address = await prisma.address.findFirst({
+      where: { id: addressId, userId },
+    });
+
+    if (!address) {
+      throw new Error("Không tìm thấy địa chỉ");
+    }
+
+    await prisma.address.updateMany({
+      where: { userId },
+      data: { isDefault: false },
+    });
+
+    return prisma.address.update({
+      where: { id: addressId },
+      data: { isDefault: true },
+    });
+  }
 }
 
 export const authService = new AuthService();

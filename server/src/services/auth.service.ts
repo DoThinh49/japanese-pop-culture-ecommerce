@@ -1,12 +1,14 @@
 import bcrypt from "bcryptjs";
+import { OAuth2Client } from "google-auth-library";
 import prisma from "../config/prisma.js";
+import { env } from "../config/env.js";
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
   TokenPayload,
 } from "../utils/jwt.js";
-import { Role } from "@prisma/client";
+import { Role, AuthProvider } from "@prisma/client";
 
 export class AuthService {
   async register(data: {
@@ -80,6 +82,104 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
     if (!isPasswordValid) {
       throw new Error("Email hoặc mật khẩu không chính xác");
+    }
+
+    const tokenPayload: TokenPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    const safeUser = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      phone: user.phone,
+      role: user.role,
+      avatarUrl: user.avatarUrl,
+      otakuPoints: user.otakuPoints,
+      createdAt: user.createdAt,
+    };
+
+    return { user: safeUser, accessToken, refreshToken };
+  }
+
+  async googleAuth(data: {
+    credential?: string;
+    email?: string;
+    fullName?: string;
+    avatarUrl?: string;
+  }) {
+    let email = data.email;
+    let fullName = data.fullName;
+    let avatarUrl = data.avatarUrl;
+
+    // 1. If Google ID Token credential is provided, verify it
+    if (data.credential) {
+      try {
+        const client = new OAuth2Client(env.GOOGLE.CLIENT_ID || undefined);
+        const ticket = await client.verifyIdToken({
+          idToken: data.credential,
+          audience: env.GOOGLE.CLIENT_ID || undefined,
+        });
+        const payload = ticket.getPayload();
+        if (payload && payload.email) {
+          email = payload.email;
+          fullName = payload.name || payload.email.split("@")[0];
+          avatarUrl = payload.picture || avatarUrl;
+        }
+      } catch {
+        // Fallback verification via Google tokeninfo
+        try {
+          const resp = await fetch(
+            `https://oauth2.googleapis.com/tokeninfo?id_token=${data.credential}`
+          );
+          const tokenInfo = (await resp.json()) as any;
+          if (tokenInfo.email) {
+            email = tokenInfo.email;
+            fullName = tokenInfo.name || tokenInfo.email.split("@")[0];
+            avatarUrl = tokenInfo.picture || avatarUrl;
+          }
+        } catch {
+          throw new Error("Mã xác thực Google không hợp lệ hoặc đã hết hạn");
+        }
+      }
+    }
+
+    if (!email) {
+      throw new Error("Không thể xác định email từ tài khoản Google");
+    }
+
+    // 2. Find or create user
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      if (!user.isActive) {
+        throw new Error("Tài khoản của bạn đã bị khóa, vui lòng liên hệ hỗ trợ");
+      }
+      if (user.authProvider !== AuthProvider.GOOGLE && !user.avatarUrl && avatarUrl) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { avatarUrl },
+        });
+      }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email,
+          fullName: fullName || email.split("@")[0],
+          avatarUrl: avatarUrl || null,
+          role: Role.CUSTOMER,
+          authProvider: AuthProvider.GOOGLE,
+          passwordHash: null,
+          otakuPoints: 50, // Welcome gift 50 points!
+        },
+      });
     }
 
     const tokenPayload: TokenPayload = {

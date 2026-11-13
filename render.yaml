@@ -48,3 +48,4 @@ services:
           type: web
           name: akiba-store-backend
           property: host
+

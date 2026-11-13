@@ -41,6 +41,20 @@ export class AuthController {
     }
   }
 
+  async googleLogin(req: Request, res: Response) {
+    try {
+      const result = await authService.googleAuth(req.body);
+      res.cookie("refreshToken", result.refreshToken, COOKIE_OPTIONS);
+      return sendSuccess(
+        res,
+        { user: result.user, accessToken: result.accessToken },
+        "Đăng nhập bằng Google thành công"
+      );
+    } catch (error: any) {
+      return sendError(res, error.message || "Đăng nhập Google thất bại", 400);
+    }
+  }
+
   async logout(_req: Request, res: Response) {
     res.clearCookie("refreshToken", COOKIE_OPTIONS);
     return sendSuccess(res, null, "Đăng xuất thành công");

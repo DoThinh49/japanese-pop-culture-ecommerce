@@ -1,0 +1,51 @@
+import express, { Application, Request, Response, NextFunction } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import { env } from "./config/env.js";
+
+const app: Application = express();
+
+// Middlewares
+app.use(morgan("dev"));
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Health Check API
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: "success",
+    message: "NihoNex Japanese Pop Culture E-Commerce API is running smoothly!",
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+  });
+});
+
+// 404 Handler
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({
+    status: "error",
+    message: "API Route Not Found",
+  });
+});
+
+// Global Error Handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Unhandled Error:", err);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    status: "error",
+    message: err.message || "Internal Server Error",
+    ...(env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
+
+export default app;
+

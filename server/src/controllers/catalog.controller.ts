@@ -55,3 +55,4 @@ export class CatalogController {
 
 export const catalogController = new CatalogController();
 export default catalogController;
+

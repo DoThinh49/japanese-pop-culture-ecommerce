@@ -34,3 +34,4 @@ export class ProductController {
 
 export const productController = new ProductController();
 export default productController;
+

@@ -8,3 +8,4 @@ router.get("/series", catalogController.getSeries);
 router.get("/manufacturers", catalogController.getManufacturers);
 
 export default router;
+

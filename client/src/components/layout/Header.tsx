@@ -138,8 +138,8 @@ export default function Header() {
           <Link href="/products?category=gunpla-model-kit" className="hover:text-red-600 whitespace-nowrap transition-colors">
             Gunpla & Model Kit
           </Link>
-          <Link href="/products?category=thoi-trang-doi-song" className="hover:text-red-600 whitespace-nowrap transition-colors">
-            Thời trang Anime
+          <Link href="/products?category=thoi-trang" className="hover:text-red-600 whitespace-nowrap transition-colors">
+            Thời trang
           </Link>
           <Link href="/pre-order" className="text-amber-600 font-semibold hover:text-amber-700 whitespace-nowrap transition-colors">
             ⚡ Đặt trước (Pre-order)

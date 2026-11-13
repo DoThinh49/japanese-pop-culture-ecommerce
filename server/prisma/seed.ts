@@ -117,8 +117,8 @@ async function main() {
 
   const catApparel = await prisma.category.create({
     data: {
-      name: "Thời trang & Đời sống Anime",
-      slug: "thoi-trang-doi-song",
+      name: "Thời trang",
+      slug: "thoi-trang",
       description: "Áo thun Graphic Tees, Hoodie, Áo Haori truyền thống, Lót chuột và Đồ gia dụng",
       imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600",
       sortOrder: 5,

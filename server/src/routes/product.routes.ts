@@ -8,3 +8,4 @@ router.get("/", productController.getProducts);
 router.get("/:slug", productController.getBySlug);
 
 export default router;
+

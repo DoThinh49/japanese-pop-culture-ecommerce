@@ -32,7 +32,7 @@ export default function Footer() {
               <li><Link href="/products?category=mo-hinh-figure" className="hover:text-white transition-colors">Nendoroid chính hãng</Link></li>
               <li><Link href="/products?category=gunpla-model-kit" className="hover:text-white transition-colors">Gunpla Bandai Nhật Bản</Link></li>
               <li><Link href="/products?category=manga-light-novel" className="hover:text-white transition-colors">Manga & Light Novel</Link></li>
-              <li><Link href="/pre-order" className="hover:text-white transition-colors">Lịch phát hành Pre-order</Link></li>
+              <li><Link href="/products?category=thoi-trang" className="hover:text-white transition-colors">Thời trang</Link></li>
             </ul>
           </div>
 

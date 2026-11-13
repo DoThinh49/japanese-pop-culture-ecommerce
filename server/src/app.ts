@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { env } from "./config/env.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app: Application = express();
 
@@ -22,11 +23,14 @@ app.use(cookieParser());
 app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
-    message: "NihoNex Japanese Pop Culture E-Commerce API is running smoothly!",
+    message: "Japanese Pop Culture E-Commerce API is running smoothly!",
     timestamp: new Date().toISOString(),
     environment: env.NODE_ENV,
   });
 });
+
+// API Routes
+app.use("/api/auth", authRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {
@@ -48,4 +52,3 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 export default app;
-

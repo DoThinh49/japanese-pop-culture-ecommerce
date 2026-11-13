@@ -5,73 +5,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { LogIn, AlertCircle } from 'lucide-react';
-
-interface GoogleAccounts {
-  accounts?: {
-    id?: {
-      initialize: (config: {
-        client_id: string;
-        callback: (res: { credential: string }) => void;
-      }) => void;
-      prompt: () => void;
-    };
-  };
-}
+import GoogleAuthModal from '@/components/auth/GoogleAuthModal';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, googleLogin } = useAuthStore();
+  const { login } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setGoogleLoading(true);
-    try {
-      // 1. If Google Client ID is configured, try official Google Identity Services
-      const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-      const winGoogle = typeof window !== 'undefined' ? (window as unknown as { google?: GoogleAccounts }).google : undefined;
-      if (googleClientId && winGoogle?.accounts?.id) {
-        winGoogle.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: async (response: { credential: string }) => {
-            try {
-              await googleLogin({ credential: response.credential });
-              router.push('/');
-            } catch (err: unknown) {
-              const message =
-                err && typeof err === 'object' && 'response' in err
-                  ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-                  : undefined;
-              setError(message || 'Đăng nhập Google thất bại');
-              setGoogleLoading(false);
-            }
-          },
-        });
-        winGoogle.accounts.id.prompt();
-        return;
-      }
-
-      // 2. Demo Google Auth flow for instant testing
-      await googleLogin({
-        email: 'otaku.google@akibastore.vn',
-        fullName: 'Otaku Google Member',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-      });
-      router.push('/');
-    } catch (err: unknown) {
-      const message =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-          : undefined;
-      setError(message || 'Đăng nhập Google thất bại');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,9 +82,9 @@ export default function LoginPage() {
               <label className="block text-xs font-semibold text-gray-700">
                 Mật khẩu
               </label>
-              <Link href="/forgot-password" className="text-[11px] text-red-600 hover:underline">
+              <a href="#" className="text-xs text-red-600 hover:underline">
                 Quên mật khẩu?
-              </Link>
+              </a>
             </div>
             <input
               type="password"
@@ -156,7 +99,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-60"
+            className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-sm transition-all shadow-md shadow-red-200 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
           >
             {loading ? (
               <span>Đang xử lý...</span>
@@ -180,9 +123,8 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={handleGoogleSignIn}
-          disabled={googleLoading}
-          className="w-full py-2.5 px-4 border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl text-xs flex items-center justify-center gap-3 transition-all shadow-xs disabled:opacity-60"
+          onClick={() => setShowGoogleModal(true)}
+          className="w-full py-2.5 px-4 border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl text-xs flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer"
         >
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
             <path
@@ -202,7 +144,7 @@ export default function LoginPage() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          <span>{googleLoading ? 'Đang xác thực Google...' : 'Đăng nhập bằng tài khoản Google'}</span>
+          <span>Đăng nhập bằng tài khoản Google</span>
         </button>
 
         <div className="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
@@ -212,6 +154,12 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+
+      <GoogleAuthModal
+        isOpen={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+        mode="login"
+      />
     </div>
   );
 }

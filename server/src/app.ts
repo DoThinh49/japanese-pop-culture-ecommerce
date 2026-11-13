@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { env } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import catalogRoutes from "./routes/catalog.routes.js";
 
 const app: Application = express();
 
@@ -31,6 +33,8 @@ app.get("/api/health", (_req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/catalog", catalogRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {

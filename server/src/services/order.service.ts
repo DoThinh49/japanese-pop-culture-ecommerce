@@ -211,16 +211,20 @@ export class OrderService {
     // 8. If VNPay payment method, generate VNPay URL
     let paymentUrl: string | null = null;
     if (input.paymentMethod === PaymentMethod.VNPAY) {
-      paymentUrl = createVNPayUrl({
-        tmnCode: env.VNPAY.TMN_CODE,
-        hashSecret: env.VNPAY.HASH_SECRET,
-        vnpUrl: env.VNPAY.URL,
-        returnUrl: env.VNPAY.RETURN_URL,
-        orderCode: order.orderCode,
-        amount: totalAmount,
-        orderInfo: `Thanh toan don hang ${order.orderCode} tai Akiba Store`,
-        ipAddr: input.clientIp || "127.0.0.1",
-      });
+      if (env.VNPAY.USE_SIMULATOR) {
+        paymentUrl = `${env.CLIENT_URL}/orders/vnpay-simulator?orderCode=${order.orderCode}&amount=${totalAmount}&orderInfo=${encodeURIComponent(`Thanh toan don hang ${order.orderCode} tai Akiba Store`)}`;
+      } else {
+        paymentUrl = createVNPayUrl({
+          tmnCode: env.VNPAY.TMN_CODE,
+          hashSecret: env.VNPAY.HASH_SECRET,
+          vnpUrl: env.VNPAY.URL,
+          returnUrl: env.VNPAY.RETURN_URL,
+          orderCode: order.orderCode,
+          amount: totalAmount,
+          orderInfo: `Thanh toan don hang ${order.orderCode} tai Akiba Store`,
+          ipAddr: input.clientIp || "127.0.0.1",
+        });
+      }
     }
 
     return {

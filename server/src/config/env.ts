@@ -17,6 +17,7 @@ export const env = {
     HASH_SECRET: process.env.VNPAY_HASH_SECRET || "XNBCJFAKAZQSGTARRLKHYWGIYMUZUKJN",
     URL: process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
     RETURN_URL: process.env.VNPAY_RETURN_URL || "http://localhost:3000/orders/vnpay-return",
+    USE_SIMULATOR: process.env.VNPAY_USE_SIMULATOR !== "false",
   },
   GOOGLE: {
     CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",

@@ -218,7 +218,7 @@ export class OrderService {
         returnUrl: env.VNPAY.RETURN_URL,
         orderCode: order.orderCode,
         amount: totalAmount,
-        orderInfo: `Thanh toán đơn hàng ${order.orderCode} - Akiba Store`,
+        orderInfo: `Thanh toan don hang ${order.orderCode} tai Akiba Store`,
         ipAddr: input.clientIp || "127.0.0.1",
       });
     }

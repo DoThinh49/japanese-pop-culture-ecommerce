@@ -7,7 +7,7 @@ import Footer from '@/components/layout/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AkibaCommerce | Website Kinh Doanh Sản Phẩm Văn Hóa Đại Chúng Nhật Bản',
+  title: 'Akiba Store | Website Kinh Doanh Sản Phẩm Văn Hóa Đại Chúng Nhật Bản',
   description:
     'Sàn thương mại điện tử chuyên biệt Figure, Manga, Nendoroid, Gunpla, Standee và phụ kiện anime chính hãng từ Nhật Bản.',
 };

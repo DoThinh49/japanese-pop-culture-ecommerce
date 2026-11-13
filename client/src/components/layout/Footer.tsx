@@ -13,7 +13,7 @@ export default function Footer() {
                 日
               </span>
               <span className="font-bold text-lg text-white">
-                Akiba<span className="text-red-500">Commerce</span>
+                Akiba <span className="text-red-500">Store</span>
               </span>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed">
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-900 mt-10 pt-6 text-center text-gray-500 text-[11px]">
-          © {new Date().getFullYear()} AkibaCommerce - Japanese Pop Culture E-Commerce Platform. Khóa luận tốt nghiệp.
+          © {new Date().getFullYear()} Akiba Store - Japanese Pop Culture E-Commerce Platform. Khóa luận tốt nghiệp.
         </div>
       </div>
     </footer>

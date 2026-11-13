@@ -31,7 +31,7 @@ export default function Header() {
             </span>
             <div className="flex flex-col">
               <span className="font-bold text-xl tracking-tight text-gray-900 group-hover:text-red-600 transition-colors">
-                Akiba<span className="text-red-600">Commerce</span>
+                Akiba <span className="text-red-600">Store</span>
               </span>
               <span className="text-[10px] text-gray-500 uppercase tracking-widest -mt-1 font-semibold">
                 Japan Pop Store

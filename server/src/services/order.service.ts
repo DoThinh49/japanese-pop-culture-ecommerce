@@ -124,6 +124,7 @@ export class OrderService {
     const orderCode = `AKB-${dateStr}-${randomSuffix}`;
 
     // 7. Find or create delivery Address
+    const streetAddress = input.streetAddress || (input as any).addressDetail || "Địa chỉ nhận hàng";
     let address = await prisma.address.findFirst({
       where: {
         userId: input.userId,
@@ -132,7 +133,7 @@ export class OrderService {
         province: input.province,
         district: input.district,
         ward: input.ward,
-        streetAddress: input.streetAddress,
+        streetAddress,
       },
     });
 
@@ -145,7 +146,7 @@ export class OrderService {
           province: input.province,
           district: input.district,
           ward: input.ward,
-          streetAddress: input.streetAddress,
+          streetAddress,
         },
       });
     }
